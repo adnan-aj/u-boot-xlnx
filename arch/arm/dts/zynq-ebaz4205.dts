@@ -1,0 +1,145 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ *  Copyright (C) 2011 - 2015 Xilinx
+ *  Copyright (C) 2012 National Instruments Corp.
+ */
+/dts-v1/;
+#include "zynq-7000.dtsi"
+
+/ {
+	model = "EBAZ4205 Zynq-7010 Miner Board";
+	compatible = "ebaz4205,zynq-ebaz4205", "xlnx,zynq-7000";
+
+	aliases {
+		serial0 = &uart1;
+		spi0 = &qspi;
+		mmc0 = &sdhci0;
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x10000000>;
+	};
+
+	chosen {
+		bootargs = "";
+		stdout-path = "serial0:115200n8";
+	};
+	/*	usb_phy0: phy0 {
+		#phy-cells = <0>;
+		compatible = "usb-nop-xceiv";
+		reset-gpios = <&gpio0 46 1>;
+	};	*/
+};
+
+&clkc {
+	ps-clk-frequency = <33333333>;
+};
+
+&gem0 {
+	status = "okay";
+	phy-mode = "rgmii-id";
+	phy-handle = <&ethernet_phy>;
+
+	ethernet_phy: ethernet-phy@0 {
+		reg = <0>;
+		device_type = "ethernet-phy";
+	};
+};
+
+&sdhci0 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&uart1 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+/*
+&qspi {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+	dr_mode = "host";
+	usb-phy = <&usb_phy0>;
+};
+*/
+
+&nand0 {
+	status = "okay";
+	arm,nand-cycle-t0 = <0x4>;
+	arm,nand-cycle-t1 = <0x4>;
+	arm,nand-cycle-t2 = <0x1>;
+	arm,nand-cycle-t3 = <0x2>;
+	arm,nand-cycle-t4 = <0x2>;
+	arm,nand-cycle-t5 = <0x2>;
+	arm,nand-cycle-t6 = <0x4>;
+
+	/*
+		https://blog.csdn.net/zhys2007/article/details/106175366
+		9 ofpart partitions found on MTD device pl35x-nand
+		Creating 9 MTD partitions on "pl35x-nand":
+		0x000000000000-0x000000300000 : "nand-fsbl-uboot"
+		0x000000300000-0x000000800000 : "nand-linux"
+		0x000000800000-0x000000820000 : "nand-device-tree"
+		0x000000820000-0x000001220000 : "nand-rootfs"
+		0x000001220000-0x000002220000 : "nand-jffs2"
+		0x000002220000-0x000002a20000 : "nand-bitstream"
+		0x000002a20000-0x000006a20000 : "nand-allrootfs"
+		0x000006a20000-0x000007e00000 : "nand-release"
+		0x000007e00000-0x000008000000 : "nand-reserve"
+	*/
+
+	partition@0 {
+		label = "nand-fsbl-uboot";
+		reg = <0x0 0x300000>;			/* 3MB */
+	};
+	partition@300000 {
+		label = "nand-linux";
+		reg = <0x300000 0x500000>;		/* 5MB */
+	};
+	partition@800000 {
+		label = "nand-device-tree";
+		reg = <0x800000 0x20000>;		/* 128kB */
+	};
+	partition@820000 {
+		label = "nand-rootfs";
+		reg = <0x820000 0xA00000>;		/* 10MB */
+	};
+	partition@1220000 {
+		label = "nand-jffs2";
+		reg = <0x1220000 0x1000000>;	/* 16MB */
+	};
+	partition@2220000 {
+		label = "nand-bitstream";
+		reg = <0x2220000 0x800000>;		/* 8MB */
+	};
+	partition@2a20000 {
+		label = "nand-allrootfs";
+		reg = <0x2a20000 0x4000000>;	/* 64MB */
+	};
+	partition@6a20000 {
+		label = "nand-release";
+		reg = <0x6a20000 0x13e0000>;	/* 20MB */
+	};
+	partition@7e00000 {
+		label = "nand-reserve";
+		reg = <0x7e00000 0x200000>;		/* 2MB */
+	};
+
+
+
+};
+
+&smcc {
+	status = "okay";
+	arm,addr25 = <0x0>;
+	arm,nor-chip-sel0 = <0x0>;
+	arm,nor-chip-sel1 = <0x0>;
+	arm,sram-chip-sel0 = <0x0>;
+	arm,sram-chip-sel1 = <0x0>;
+};
