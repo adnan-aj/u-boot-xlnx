@@ -102,16 +102,14 @@ CONFIG_ZYNQ_SERIAL=y
 # CONFIG_USB_FUNCTION_THOR=y
 CONFIG_DISPLAY=y
 CONFIG_SPL_GZIP=y
-# CONFIG_ENV_IS_IN_FAT=y
-# CONFIG_ENV_FAT_INTERFACE="mmc"
-# CONFIG_ENV_FAT_DEVICE_AND_PART="0:auto"
-# CONFIG_ENV_FAT_FILE="uEnv.txt"
-# DEFAULT_ENV_INSTANCE_EMBEDDED=y
+CONFIG_ENV_IS_IN_FAT=y
+CONFIG_ENV_FAT_INTERFACE="mmc"
+CONFIG_ENV_FAT_DEVICE_AND_PART="0:auto"
+CONFIG_ENV_FAT_FILE="uboot.env"
 CONFIG_CMD_FAT=y
 CONFIG_BOOTDELAY=2
 CONFIG_BAUDRATE=115200
 CONFIG_USE_BOOTARGS=y
 CONFIG_BOOTARGS="console=ttyPS0,115200 root=/dev/mmcblk0p2 rw earlyprintk rootfstype=ext4 rootwait"
 CONFIG_USE_BOOTCOMMAND=y
-CONFIG_BOOTCOMMAND="mmcinfo;fatload mmc 0 0x3000000 uImage; fatload mmc 0 0x2FF0000 devicetree.dtb; bootm 0x3000000 - 0x2FF0000"
-# "if fatload mmc 0:1 0x4000000 bitstream-adi-i2s.bit; then fpga loadb 0 0x4000000 4000000; echo New bitstream found and loaded; else echo New bitstream NOT found;fi"
+CONFIG_BOOTCOMMAND="mmcinfo; fatload mmc 0 0x4000000 bitstream.bit; fpga loadb 0 0x4000000 4000000; echo BITSTREAM LOADED; fatload mmc 0 0x3000000 uImage; echo uImage LOADED; fatload mmc 0 0x2FF0000 devicetree.dtb; echo DEVICETREE LOADED; bootm 0x3000000 - 0x2FF0000"
